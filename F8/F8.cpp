@@ -13,7 +13,8 @@ void StartTeleportMenu();
 void SetRenownLevel(int newRenownLvl);
 void TeleportPlayer(float x, float y);
 
-uintptr_t dynamicPtrBaseAddr;
+uintptr_t worldPtr;
+uintptr_t cameraPtr;
 HANDLE process;
 
 int main()
@@ -24,12 +25,36 @@ int main()
 	process = 0;
 	process = OpenProcess(PROCESS_ALL_ACCESS, NULL, procId);
 
-	dynamicPtrBaseAddr = moduleBase + 0x748900; 
+	worldPtr = moduleBase + 0x748900; 
+	cameraPtr = moduleBase + 0x65E0A8;
 
-	std::cout << "Fate.exe loaded. Static pointer at: " << "0x" << std::hex << dynamicPtrBaseAddr << std::endl;
+	std::cout << "Fate.exe loaded." << std::endl;
+	std::cout << "World pointer at: " << "0x" << std::hex << worldPtr << std::endl;
+	std::cout << "Camera pointer at: " << "0x" << std::hex << worldPtr << std::endl;
 
-	DoMenu();
 
+
+	std::vector<unsigned int> cameraZoomOffsets = { 0x28C, 0x6B0 };
+	uintptr_t zoomAddr = FindDMAAddress(process, cameraPtr, cameraZoomOffsets);
+
+
+	// 250 is half black. fog?
+	// 10 clips into player, hitbox makes it difficult to walk
+	// 5 is just black
+	// zooming out in dungeons doesn't help much due to limited visibility
+	float newZoomValue = 200;
+	std::cout << "Press any key to begin." << std::endl;
+	getchar();
+
+	for (;;)
+	{
+		WriteProcessMemory(process, (BYTE*)zoomAddr, &newZoomValue, sizeof(newZoomValue), nullptr);
+	}
+
+
+	//DoMenu();
+
+	getchar();
 	return 0;
 }
 
@@ -64,7 +89,7 @@ void DoMenu()
 void SetRenownLevel(int newRenownLvl) 
 {
 	std::vector<unsigned int> renownLvlOffsets = { 0x80, 0x390 };
-	uintptr_t renownLvlAddr = FindDMAAddress(process, dynamicPtrBaseAddr, renownLvlOffsets);
+	uintptr_t renownLvlAddr = FindDMAAddress(process, worldPtr, renownLvlOffsets);
 
 	int renownLvlValue = 0;
 	ReadProcessMemory(process, (BYTE*)renownLvlAddr, &renownLvlValue, sizeof(renownLvlValue), nullptr);
@@ -76,10 +101,10 @@ void SetRenownLevel(int newRenownLvl)
 void TeleportPlayer(float x, float y)
 {
 	std::vector<unsigned int> xOffsets = { 0x80, 0xE8 };
-	uintptr_t xAddr = FindDMAAddress(process, dynamicPtrBaseAddr, xOffsets);
+	uintptr_t xAddr = FindDMAAddress(process, worldPtr, xOffsets);
 
 	std::vector<unsigned int> yOffsets = { 0x80, 0xF0 };
-	uintptr_t yAddr = FindDMAAddress(process, dynamicPtrBaseAddr, yOffsets);
+	uintptr_t yAddr = FindDMAAddress(process, worldPtr, yOffsets);
 
 	float xValue = 0, yValue = 0;
 	ReadProcessMemory(process, (BYTE*)xAddr, &xValue, sizeof(xValue), nullptr);
