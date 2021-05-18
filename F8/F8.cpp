@@ -1,8 +1,4 @@
-#include <stdio.h>
-#include <tchar.h>
-#include <iostream>
-#include <vector>
-#include <Windows.h>
+#include "stdafx.h"
 #include "proc.h"
 #include <map>
 #include <functional>
