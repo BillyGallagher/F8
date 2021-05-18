@@ -16,6 +16,9 @@
     <Filter Include="proc">
       <UniqueIdentifier>{0a5d45df-d4ac-438c-8f2c-29276ca44686}</UniqueIdentifier>
     </Filter>
+    <Filter Include="mem">
+      <UniqueIdentifier>{ef769b96-1b91-4fc9-9d97-db1e69778d7d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="F8.cpp">
@@ -24,10 +27,19 @@
     <ClCompile Include="proc.cpp">
       <Filter>proc</Filter>
     </ClCompile>
+    <ClCompile Include="mem.cpp">
+      <Filter>mem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="proc.h">
       <Filter>proc</Filter>
+    </ClInclude>
+    <ClInclude Include="mem.h">
+      <Filter>mem</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
